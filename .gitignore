@@ -1,3 +1,11 @@
+# MFC-related
+*.sdf
+*.ncb
+ipch/
+Debug/
+Release/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -102,3 +110,16 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+
+# pycharm?
+.idea/
+
+# MAC-stuff
+.DS_Store
+
+build/
+Build/
+bin/
+obj/
+
