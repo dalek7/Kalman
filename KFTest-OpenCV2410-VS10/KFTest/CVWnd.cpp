@@ -76,17 +76,38 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_)
 
 	//KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,0,0,   0,1,0,0,  0,0,1,0,  0,0,0,1);	//Roy
 
-
 	measurement.setTo(Scalar(0));
-
+	/*
 	KF.statePre.at<float>(0) = pt.x;
 	KF.statePre.at<float>(1) = pt.y;
 	KF.statePre.at<float>(2) = 0;
 	KF.statePre.at<float>(3) = 0;
+	*/
+	
+	KF.statePost.at<float>(0) = pt.x;
+	KF.statePost.at<float>(1) = pt.y;
+	KF.statePost.at<float>(2) = 0;
+	KF.statePost.at<float>(3) = 0;
+	
+	/*
+	KF.statePre.at(0) = mousePos.x;
+	KF.statePre.at(1) = mousePos.y;
+
+	should actually be
+
+	KF.statePost.at(0) = mousePos.x;
+	KF.statePost.at(1) = mousePos.y;
+
+	as Kalman.predict() calculates statePre = TransitionMatrix * statePost;
+
+	// See http://opencvexamples.blogspot.com/2014/01/kalman-filter-implementation-tracking.html
+*/
+
 	setIdentity(KF.measurementMatrix);
 	setIdentity(KF.processNoiseCov, Scalar::all(1e-4));
 	setIdentity(KF.measurementNoiseCov, Scalar::all(10));
 	setIdentity(KF.errorCovPost, Scalar::all(.1));
+
 	// Image to show mouse tracking
 	Mat img(480, 640, CV_8UC3);
 				
@@ -97,15 +118,11 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_)
 	}
 
 	gcnt = 0;
-
 }
 
 void CVWnd::Init()
 {
-
 	string str;
-	
-	
 
 	img = Mat::zeros(480,640, CV_8UC3);
 
@@ -120,15 +137,8 @@ void CVWnd::Init()
 		printf("loaded an image %dx%d\n", img.rows, img.cols);
 
 	}
-
-
-	
-
-
 }
 // CVWnd message handlers
-
-
 
 
 BOOL CVWnd::OnEraseBkgnd(CDC* pDC)
@@ -155,8 +165,6 @@ BOOL CVWnd::OnEraseBkgnd(CDC* pDC)
 void CVWnd::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
-
-
 	//if(bRun)
 	if(pv->m_chk_run.GetCheck())
 	if(nIDEvent==0)
@@ -165,10 +173,8 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 		GetCursorPos(&pt);
 		ScreenToClient(&pt);
 
-
 		mouse_info.x = pt.x;
 		mouse_info.y = pt.y;
-
 
 		if(pt.x>=0 && pt.x<640 && pt.y >=0 && pt.y<480)
 		{
@@ -176,8 +182,6 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 			if(gcnt==0)
 			{
 				InitKF();
-
-
 			}
 			else
 			{
@@ -192,20 +196,19 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 
 				img.setTo(cv::Scalar(0,0,0));
 
-				 // First predict, to update the internal statePre variable
-				 Mat prediction = KF.predict();
-				 Point predictPt(prediction.at<float>(0),prediction.at<float>(1));
+				// First predict, to update the internal statePre variable
+				Mat prediction = KF.predict();
+				Point predictPt(prediction.at<float>(0),prediction.at<float>(1));
               
-				 // Get mouse point
-				 measurement(0) = pt.x;
-				 measurement(1) = pt.y; 
+				// Get mouse point
+				measurement(0) = pt.x;
+				measurement(1) = pt.y; 
 
 				 // The update phase 
 				Mat estimated = KF.correct(measurement);
 
 				Point statePt(estimated.at<float>(0),estimated.at<float>(1));
 				Point measPt(measurement(0),measurement(1));
-
 
 				mousev.push_back(measPt);
 				kalmanv.push_back(statePt);
@@ -219,16 +222,22 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 				for (i = 0; i < kalmanv.size()-1; i++) 
 					line(img, kalmanv[i], kalmanv[i+1], Scalar(0,255,255), 1);
 
+				// for debugging
+				//Point stateVel(estimated.at<float>(2),estimated.at<float>(3));
+				//cout << estimated.at<float>(2) <<"\t"<<estimated.at<float>(3)<<endl;
+				char str1[255];
+				sprintf(str1, "%.3f\t%.3f\t%.3f\t%.3f\n",	estimated.at<float>(0), estimated.at<float>(1), 
+															estimated.at<float>(2), estimated.at<float>(3));
+				printf(str1);
+
+				sprintf(str1, "%.3f\t%.3f\n", estimated.at<float>(2), estimated.at<float>(3));
+				pv->m_info2.SetWindowTextA(str1);
+
 
 			}
-			
-
 			gcnt++;
 		}
-
-		
 		Invalidate();
-
 	}
 
 	CWnd::OnTimer(nIDEvent);

@@ -56,6 +56,7 @@ public:
 	afx_msg void OnBnClickedButton1();
 	CSliderCtrl m_sld_vel;
 	CStatic m_info1;
+	CStatic m_info2;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
