@@ -47,6 +47,7 @@ void CKFTestView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK1, m_chk_run);
 	DDX_Control(pDX, IDC_SLIDER1, m_sld_vel);
 	DDX_Control(pDX, IDC_STATIC1, m_info1);
+	DDX_Control(pDX, IDC_STATIC2, m_info2);
 }
 
 BOOL CKFTestView::PreCreateWindow(CREATESTRUCT& cs)
