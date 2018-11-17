@@ -1,5 +1,6 @@
 # MFC-related
 *.sdf
+*.opensdf
 *.ncb
 ipch/
 Debug/
