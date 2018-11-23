@@ -19,7 +19,6 @@ line( img, Point( center.x + d, center.y - d ),                \
 Point( center.x - d, center.y + d ), color, 2, CV_AA, 0 )
 
 
-struct mouse_info_struct { int x,y; };
 struct mouse_info_struct mouse_info = {-1,-1}, last_mouse;
 vector<Point> mousev,kalmanv;
 
@@ -35,10 +34,10 @@ IMPLEMENT_DYNAMIC(CVWnd, CWnd)
 
 CVWnd::CVWnd()
 {
-	bRun = FALSE;
-	gcnt = 0;
+	bRunPrev = FALSE;
 
-	vc=1.0f ;
+	gcnt = 0;
+	vc=0.0f ;
 }
 
 CVWnd::~CVWnd()
@@ -192,9 +191,15 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 	//if(bRun)
-	if(pv->m_chk_run.GetCheck())
+	BOOL bRun = pv->m_chk_run.GetCheck();
+
+	if(bRun)
 	if(nIDEvent==0)
 	{
+		if(bRun != bRunPrev)
+		{
+			pv->m_wnd1.SetFocus();
+		}
 
 		GetCursorPos(&pt);
 		ScreenToClient(&pt);
@@ -205,15 +210,14 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 		if(pt.x>=0 && pt.x<640 && pt.y >=0 && pt.y<480)
 		{
 			BOOL bCVModel = pv->m_chk_model_cv.GetCheck();
-
+			float v1 = pv->m_sld_vel.GetPos() * 0.1;
 			if(gcnt==0)
 			{
-				InitKF(TRUE, 1.0, bCVModel);
+				InitKF(TRUE, v1, bCVModel);
 				pv->m_btn_clear.EnableWindow(TRUE);
 			}
 			else
 			{
-				float v1 = pv->m_sld_vel.GetPos() * 0.1;
 				if(v1 != vc)
 				{
 					CString buf1; 
@@ -279,6 +283,7 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 		Invalidate();
 	}
 
+	bRunPrev = bRun;
 	CWnd::OnTimer(nIDEvent);
 }
 

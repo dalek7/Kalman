@@ -73,9 +73,15 @@ void CKFTestView::OnInitialUpdate()
 
 	m_chk_model_cv.SetCheck(TRUE);
 	m_sld_vel.SetRange(0,99);
-	m_sld_vel.SetPos(15);
+
+	int vc10 = 15;
+	m_sld_vel.SetPos(vc10);
+	CString buf1; 
+	buf1.Format("%.2f", vc10 / 10.0f);
+	pv->m_info1.SetWindowTextA(buf1);
 
 	m_btn_clear.EnableWindow(FALSE);
+	m_btn_clear.ShowWindow(FALSE); // USE Spacebar instead !!
 	printf("Ready..\n");
 
 }
