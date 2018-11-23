@@ -39,7 +39,9 @@ public:
 	}
 	CPoint pt;
 
-	void InitKF(BOOL bForceResetData=TRUE,float vc_ = 1);
+	KalmanFilter KF;//(6, 2, 0); 
+
+	void InitKF(BOOL bForceResetData=TRUE, float vc_ = 1, BOOL bCVModel=TRUE); // const velocity model
 	void Init();
 	
 	Mat img;

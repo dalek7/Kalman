@@ -53,11 +53,14 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CButton m_chk_run;
+	CButton m_chk_model_cv;
 	afx_msg void OnBnClickedButton1();
 	CSliderCtrl m_sld_vel;
 	CStatic m_info1;
 	CStatic m_info2;
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	
+	CButton m_btn_clear;
 };
 
 #ifndef _DEBUG  // debug version in KFTestView.cpp

@@ -48,6 +48,8 @@ void CKFTestView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLIDER1, m_sld_vel);
 	DDX_Control(pDX, IDC_STATIC1, m_info1);
 	DDX_Control(pDX, IDC_STATIC2, m_info2);
+	DDX_Control(pDX, IDC_CHECK2, m_chk_model_cv);
+	DDX_Control(pDX, IDC_BUTTON1, m_btn_clear);
 }
 
 BOOL CKFTestView::PreCreateWindow(CREATESTRUCT& cs)
@@ -64,16 +66,16 @@ void CKFTestView::OnInitialUpdate()
 	GetParentFrame()->RecalcLayout();
 	ResizeParentToFit();
 
-
 	pv = this;
 
 	m_wnd1.Create(this);
 	pWnd1 = &m_wnd1;
 
-//	RedirectIOToConsole();
-
+	m_chk_model_cv.SetCheck(TRUE);
 	m_sld_vel.SetRange(0,99);
+	m_sld_vel.SetPos(15);
 
+	m_btn_clear.EnableWindow(FALSE);
 	printf("Ready..\n");
 
 }
@@ -118,7 +120,6 @@ CKFTestDoc* CKFTestView::GetDocument() const // non-debug version is inline
 
 void CKFTestView::OnBnClickedButton1()
 {
-	//pWnd1->Init();
 	pWnd1->InitKF();
 }
 
