@@ -254,9 +254,19 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 				for (i = 0; i < kalmanv.size()-1; i++) 
 					line(img, kalmanv[i], kalmanv[i+1], Scalar(0,255,255), 1);
 
+				char str1[255];
+
+				// Test 
+				//Mat gain = KF.gain;
+				//KF.gain.rows = 4;
+				//KF.gain.cols = 2;
+				//sprintf(str1, "%.3f,%.3f,%.3f,%.3f\n%.3f,%.3f,%.3f,%.3f\n", 
+				//			KF.gain.at<float>(0,0), KF.gain.at<float>(0,1), KF.gain.at<float>(1,0), KF.gain.at<float>(1,1),
+				//			KF.gain.at<float>(2,0), KF.gain.at<float>(2,1), KF.gain.at<float>(3,0), KF.gain.at<float>(3,1));
+					
+
 				// for debugging the observed state
 				
-				char str1[255];
 				if(bCVModel)
 				{
 					sprintf(str1, "%.3f\t%.3f\t%.3f\t%.3f\n",	estimated.at<float>(0), estimated.at<float>(1), 
