@@ -54,7 +54,6 @@ END_MESSAGE_MAP()
 
 void CVWnd::Create( CWnd *p, CRect rc)
 {
-	
 	CWnd::Create( NULL,"",WS_CHILD|WS_VISIBLE,CRect(rc.TopLeft().x,rc.TopLeft().y,rc.Width(),rc.Height()),p,0);
 	
 	RedirectIOToConsole();
@@ -72,7 +71,14 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_)
 	//float v1 = pv->m_sld_vel.GetPos() * 0.1;
 
 	vc = vc_;
-	KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,vc,0,   0,1,0,vc,  0,0,1,0,  0,0,0,1);
+
+	// Constant target velocity assumption 
+	// Useful to model smooth target motion
+	// State prediction:  Linear target motion
+	KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,vc,0,   
+												 0,1,0,vc,  
+												 0,0,1,0,  
+												 0,0,0,1);
 
 	//KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,0,0,   0,1,0,0,  0,0,1,0,  0,0,0,1);	//Roy
 
@@ -178,7 +184,6 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 
 		if(pt.x>=0 && pt.x<640 && pt.y >=0 && pt.y<480)
 		{
-
 			if(gcnt==0)
 			{
 				InitKF();
