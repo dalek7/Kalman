@@ -17,7 +17,7 @@ using namespace cv;
 
 #include "../lib/CvvImage.h"
 
-
+struct mouse_info_struct { int x,y; };
 
 class CVWnd : public CWnd
 {
@@ -31,15 +31,13 @@ public:
 public:
 	
 	virtual void Create( CWnd *, CRect rc=CRect(0,0,640,480));
-	BOOL bRun;
-	void ToggleRun()
-	{
-		bRun^=1;
-
-	}
+	BOOL bRunPrev;
+	
 	CPoint pt;
 
-	void InitKF(BOOL bForceResetData=TRUE,float vc_ = 1);
+	KalmanFilter KF;//(6, 2, 0); 
+
+	void InitKF(BOOL bForceResetData=TRUE, float vc_ = 1, BOOL bCVModel=TRUE); // const velocity model
 	void Init();
 	
 	Mat img;

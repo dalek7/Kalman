@@ -19,14 +19,14 @@ line( img, Point( center.x + d, center.y - d ),                \
 Point( center.x - d, center.y + d ), color, 2, CV_AA, 0 )
 
 
-
-
-struct mouse_info_struct { int x,y; };
 struct mouse_info_struct mouse_info = {-1,-1}, last_mouse;
 vector<Point> mousev,kalmanv;
 
 //KalmanFilter (int dynamParams, int measureParams, int controlParams=0, int type=CV_32F)
-KalmanFilter KF(4, 2, 0); // the full constructor taking the dimensionality of the state, of the measurement and of the control vector
+// the full constructor taking the dimensionality of the state, of the measurement and of the control vector
+//KalmanFilter KF(4, 2, 0); 
+//KalmanFilter KF(6, 2, 0); 
+
 Mat_<float> measurement(2,1); 
 //vector<Point> mousev,kalmanv;
 
@@ -34,10 +34,10 @@ IMPLEMENT_DYNAMIC(CVWnd, CWnd)
 
 CVWnd::CVWnd()
 {
-	bRun = FALSE;
-	gcnt = 0;
+	bRunPrev = FALSE;
 
-	vc=1 ;
+	gcnt = 0;
+	vc=0.0f ;
 }
 
 CVWnd::~CVWnd()
@@ -54,7 +54,6 @@ END_MESSAGE_MAP()
 
 void CVWnd::Create( CWnd *p, CRect rc)
 {
-	
 	CWnd::Create( NULL,"",WS_CHILD|WS_VISIBLE,CRect(rc.TopLeft().x,rc.TopLeft().y,rc.Width(),rc.Height()),p,0);
 	
 	RedirectIOToConsole();
@@ -65,15 +64,36 @@ void CVWnd::Create( CWnd *p, CRect rc)
 
 }
 
-void CVWnd::InitKF(BOOL bForceResetData, float vc_)
+void CVWnd::InitKF(BOOL bForceResetData, float vc_, BOOL bCVModel)
 {
 	img.setTo(cv::Scalar(0,0,0));
 
-	//float v1 = pv->m_sld_vel.GetPos() * 0.1;
-
 	vc = vc_;
-	KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,vc,0,   0,1,0,vc,  0,0,1,0,  0,0,0,1);
 
+	if(bCVModel) // Constant velocity assumption 
+	{
+		// Useful to model smooth target motion
+		// State prediction:  Linear target motion
+
+		KF = KalmanFilter(4, 2, 0); 
+		
+
+		KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,vc,0,   
+													 0,1,0,vc,  
+													 0,0,1,0,  
+													 0,0,0,1);
+	}
+	else	// Const acc. assumption
+	{
+		// Useful to model target motion that is smooth in position and velocity changes 
+		KF = KalmanFilter(6, 2, 0); 
+		KF.transitionMatrix = *(Mat_<float>(6, 6) << 1,0,vc,0,0.5*vc*vc, 0,
+													 0,1,0,vc,0,  0.5*vc*vc,
+													 0,0,1,0,vc,0,  
+													 0,0,0,1,0,vc,
+													 0,0,0,0,1,0,
+													 0,0,0,0,0,1 );
+	}
 	//KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,0,0,   0,1,0,0,  0,0,1,0,  0,0,0,1);	//Roy
 
 	measurement.setTo(Scalar(0));
@@ -89,6 +109,11 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_)
 	KF.statePost.at<float>(2) = 0;
 	KF.statePost.at<float>(3) = 0;
 	
+	if(!bCVModel)
+	{
+		KF.statePost.at<float>(4) = 0;
+		KF.statePost.at<float>(5) = 0;
+	}
 	/*
 	KF.statePre.at(0) = mousePos.x;
 	KF.statePre.at(1) = mousePos.y;
@@ -166,9 +191,15 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: Add your message handler code here and/or call default
 	//if(bRun)
-	if(pv->m_chk_run.GetCheck())
+	BOOL bRun = pv->m_chk_run.GetCheck();
+
+	if(bRun)
 	if(nIDEvent==0)
 	{
+		if(bRun != bRunPrev)
+		{
+			pv->m_wnd1.SetFocus();
+		}
 
 		GetCursorPos(&pt);
 		ScreenToClient(&pt);
@@ -178,20 +209,21 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 
 		if(pt.x>=0 && pt.x<640 && pt.y >=0 && pt.y<480)
 		{
-
+			BOOL bCVModel = pv->m_chk_model_cv.GetCheck();
+			float v1 = pv->m_sld_vel.GetPos() * 0.1;
 			if(gcnt==0)
 			{
-				InitKF();
+				InitKF(TRUE, v1, bCVModel);
+				pv->m_btn_clear.EnableWindow(TRUE);
 			}
 			else
 			{
-				float v1 = pv->m_sld_vel.GetPos() * 0.1;
 				if(v1 != vc)
 				{
 					CString buf1; 
 					buf1.Format("%.2f", v1);
 					pv->m_info1.SetWindowTextA(buf1);
-					InitKF(FALSE, v1);
+					InitKF(FALSE, v1, bCVModel);
 				}
 
 				img.setTo(cv::Scalar(0,0,0));
@@ -222,15 +254,36 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 				for (i = 0; i < kalmanv.size()-1; i++) 
 					line(img, kalmanv[i], kalmanv[i+1], Scalar(0,255,255), 1);
 
-				// for debugging
-				//Point stateVel(estimated.at<float>(2),estimated.at<float>(3));
-				//cout << estimated.at<float>(2) <<"\t"<<estimated.at<float>(3)<<endl;
 				char str1[255];
-				sprintf(str1, "%.3f\t%.3f\t%.3f\t%.3f\n",	estimated.at<float>(0), estimated.at<float>(1), 
-															estimated.at<float>(2), estimated.at<float>(3));
-				printf(str1);
 
-				sprintf(str1, "%.3f\t%.3f\n", estimated.at<float>(2), estimated.at<float>(3));
+				// Test 
+				//Mat gain = KF.gain;
+				//KF.gain.rows = 4;
+				//KF.gain.cols = 2;
+				//sprintf(str1, "%.3f,%.3f,%.3f,%.3f\n%.3f,%.3f,%.3f,%.3f\n", 
+				//			KF.gain.at<float>(0,0), KF.gain.at<float>(0,1), KF.gain.at<float>(1,0), KF.gain.at<float>(1,1),
+				//			KF.gain.at<float>(2,0), KF.gain.at<float>(2,1), KF.gain.at<float>(3,0), KF.gain.at<float>(3,1));
+					
+
+				// for debugging the observed state
+				
+				if(bCVModel)
+				{
+					sprintf(str1, "%.3f\t%.3f\t%.3f\t%.3f\n",	estimated.at<float>(0), estimated.at<float>(1), 
+																estimated.at<float>(2), estimated.at<float>(3));
+					printf(str1);
+
+					sprintf(str1, "%.3f\t%.3f\n", estimated.at<float>(2), estimated.at<float>(3));
+				}
+				else
+				{
+					sprintf(str1, "%.3f\t%.3f\t%.3f\t%.3f\t%.3f\t%.3f\n",	estimated.at<float>(0), estimated.at<float>(1), 
+																			estimated.at<float>(2), estimated.at<float>(3),
+																			estimated.at<float>(4), estimated.at<float>(5));
+					printf(str1);
+
+					sprintf(str1, "%.2f\t%.2f\t%.2f\t%.2f\n", estimated.at<float>(2), estimated.at<float>(3), estimated.at<float>(4), estimated.at<float>(5));
+				}
 				pv->m_info2.SetWindowTextA(str1);
 
 
@@ -240,6 +293,7 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 		Invalidate();
 	}
 
+	bRunPrev = bRun;
 	CWnd::OnTimer(nIDEvent);
 }
 
