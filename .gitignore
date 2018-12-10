@@ -6,6 +6,9 @@ ipch/
 Debug/
 Release/
 
+# XCODE
+xcuserdata/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
