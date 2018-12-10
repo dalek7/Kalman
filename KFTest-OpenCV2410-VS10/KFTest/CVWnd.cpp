@@ -18,6 +18,29 @@ Point( center.x + d, center.y + d ), color, 2, CV_AA, 0); \
 line( img, Point( center.x + d, center.y - d ),                \
 Point( center.x - d, center.y + d ), color, 2, CV_AA, 0 )
 
+void DbgMat(Mat m)
+{
+	for(int i = 0; i <m.rows; i++)
+	{
+		for(int j = 0; j <m.cols; j++)
+			printf("%.2f\t", m.at<float>(i,j));//m.cols*
+
+		printf("\n");
+	}
+}
+
+void cvMatPrint( const CvMat* mat )
+{
+    int i, j;
+    for( i = 0; i < mat->rows; i++ )
+    {
+        for( j = 0; j < mat->cols; j++ )
+        {
+            printf( "%f ",cvmGet( mat, i, j ) );
+        }
+        printf( "\n" );
+    }
+}
 
 struct mouse_info_struct mouse_info = {-1,-1}, last_mouse;
 vector<Point> mousev,kalmanv;
@@ -37,7 +60,7 @@ CVWnd::CVWnd()
 	bRunPrev = FALSE;
 
 	gcnt = 0;
-	vc=0.0f ;
+	dt=0.0f ;
 }
 
 CVWnd::~CVWnd()
@@ -61,14 +84,13 @@ void CVWnd::Create( CWnd *p, CRect rc)
 	Init();
 
 	SetTimer(0,10,NULL);
-
 }
 
-void CVWnd::InitKF(BOOL bForceResetData, float vc_, BOOL bCVModel)
+void CVWnd::InitKF(BOOL bForceResetData, float dt_, BOOL bCVModel)
 {
 	img.setTo(cv::Scalar(0,0,0));
 
-	vc = vc_;
+	dt = dt_;
 
 	if(bCVModel) // Constant velocity assumption 
 	{
@@ -77,9 +99,15 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_, BOOL bCVModel)
 
 		KF = KalmanFilter(4, 2, 0); 
 		
-
-		KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,vc,0,   
-													 0,1,0,vc,  
+		printf("KF.measurementMatrix (%dx%d)\n", KF.measurementMatrix.rows, KF.measurementMatrix.cols );
+		printf("KF.transitionMatrix (%dx%d)\n", KF.transitionMatrix.rows, KF.transitionMatrix.cols );
+		printf("KF.processNoiseCov (%dx%d)\nprocess noise covariance matrix (Q)\n", KF.processNoiseCov.rows, KF.processNoiseCov.cols );
+		printf("KF.errorCovPost (%dx%d) : \nposteriori error estimate covariance matrix (P(k)): P(k)=(I-K(k)*H)*P'(k)\n\n", 
+			KF.errorCovPost.rows, KF.errorCovPost.cols );
+		
+				
+		KF.transitionMatrix = *(Mat_<float>(4, 4) << 1,0,dt,0,   
+													 0,1,0,dt,  
 													 0,0,1,0,  
 													 0,0,0,1);
 	}
@@ -87,10 +115,10 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_, BOOL bCVModel)
 	{
 		// Useful to model target motion that is smooth in position and velocity changes 
 		KF = KalmanFilter(6, 2, 0); 
-		KF.transitionMatrix = *(Mat_<float>(6, 6) << 1,0,vc,0,0.5*vc*vc, 0,
-													 0,1,0,vc,0,  0.5*vc*vc,
-													 0,0,1,0,vc,0,  
-													 0,0,0,1,0,vc,
+		KF.transitionMatrix = *(Mat_<float>(6, 6) << 1,0,dt,0,0.5*dt*dt, 0,
+													 0,1,0,dt,0,  0.5*dt*dt,
+													 0,0,1,0,dt,0,  
+													 0,0,0,1,0,dt,
 													 0,0,0,0,1,0,
 													 0,0,0,0,0,1 );
 	}
@@ -133,6 +161,19 @@ void CVWnd::InitKF(BOOL bForceResetData, float vc_, BOOL bCVModel)
 	setIdentity(KF.measurementNoiseCov, Scalar::all(10));
 	setIdentity(KF.errorCovPost, Scalar::all(.1));
 
+	Mat m;
+	
+	m= KF.transitionMatrix;
+	printf("KF.transitionMatrix (%dx%d)\n", m.rows, m.cols );
+	DbgMat(m);
+	printf("------------------------------\n");
+	m= KF.measurementMatrix;
+	printf("KF.measurementMatrix (%dx%d)\n", m.rows, m.cols );
+	DbgMat(m);
+	printf("------------------------------\n");
+	//cvMatPrint(KF.measurementMatrix);
+	//cout << KF.measurementMatrix;
+	//cout << endl;
 	// Image to show mouse tracking
 	Mat img(480, 640, CV_8UC3);
 				
@@ -210,33 +251,35 @@ void CVWnd::OnTimer(UINT_PTR nIDEvent)
 		if(pt.x>=0 && pt.x<640 && pt.y >=0 && pt.y<480)
 		{
 			BOOL bCVModel = pv->m_chk_model_cv.GetCheck();
-			float v1 = pv->m_sld_vel.GetPos() * 0.1;
+			float dt1 = pv->m_sld_vel.GetPos() * 0.1;
 			if(gcnt==0)
 			{
-				InitKF(TRUE, v1, bCVModel);
+				InitKF(TRUE, dt1, bCVModel);
 				pv->m_btn_clear.EnableWindow(TRUE);
 			}
 			else
 			{
-				if(v1 != vc)
+				if(dt1 != dt)
 				{
 					CString buf1; 
-					buf1.Format("%.2f", v1);
+					buf1.Format("%.2f", dt);
 					pv->m_info1.SetWindowTextA(buf1);
-					InitKF(FALSE, v1, bCVModel);
+					InitKF(FALSE, dt, bCVModel);
 				}
 
 				img.setTo(cv::Scalar(0,0,0));
 
 				// First predict, to update the internal statePre variable
-				Mat prediction = KF.predict();
+				// Computes a predicted state.
+				Mat prediction = KF.predict(); 
 				Point predictPt(prediction.at<float>(0),prediction.at<float>(1));
               
 				// Get mouse point
 				measurement(0) = pt.x;
 				measurement(1) = pt.y; 
 
-				 // The update phase 
+				// The update phase 
+				// Updates the predicted state from the measurement.
 				Mat estimated = KF.correct(measurement);
 
 				Point statePt(estimated.at<float>(0),estimated.at<float>(1));
