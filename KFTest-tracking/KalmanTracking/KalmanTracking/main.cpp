@@ -100,18 +100,31 @@ int main(int, char**)
             measurement += KF.measurementMatrix*state;
             double measAngle = measurement.at<float>(0);
             Point measPt = calcPoint(center, R, measAngle);
+            
             // plot points
-
             img = Scalar::all(0);
-            drawCross( statePt, Scalar(255,255,255), 3 );
-            drawCross( measPt, Scalar(0,0,255), 3 );
-            drawCross( predictPt, Scalar(0,255,0), 3 );
-            line( img, statePt, measPt, Scalar(0,0,255), 3, LINE_AA, 0 );
-            line( img, statePt, predictPt, Scalar(0,255,255), 3, LINE_AA, 0 );
+            drawCross( statePt, Scalar(255,255,255), 5 );
+            drawCross( measPt, Scalar(0,0,255), 5 );
+            drawCross( predictPt, Scalar(0,255,0), 5 );
+            line( img, statePt, measPt, Scalar(0,0,255), 1, LINE_AA, 0 );
+            line( img, statePt, predictPt, Scalar(0,255,255), 1, LINE_AA, 0 );
             if(theRNG().uniform(0,4) != 0)
                 KF.correct(measurement);
             randn( processNoise, Scalar(0), Scalar::all(sqrt(KF.processNoiseCov.at<float>(0, 0))));
+            
             state = KF.transitionMatrix*state + processNoise;
+            
+            int fontFace = 0;//FONT_HERSHEY_SCRIPT_SIMPLEX;
+            double fontScale = 0.4;
+            int thickness = 1;
+            
+            putText(img, "statePt", Point(50+30,50), fontFace, fontScale, Scalar(255,255,255), thickness, 1);
+            putText(img, "measPt", Point(50+30,50+20*1), fontFace, fontScale, Scalar(0,0,255), thickness, 1);
+            putText(img, "predictPt", Point(50+30,50+20*2), fontFace, fontScale, Scalar(0,255,0), thickness, 1);
+            
+            drawCross( Point(50,50), Scalar(255,255,255), 5 ); // statePt
+            drawCross( Point(50,50+20*1), Scalar(0,0,255), 5 ); //measPt
+            drawCross( Point(50,50+20*2), Scalar(0,255,0), 5 ); //predictPt
             
             imshow( "Kalman", img );
             code = (char)waitKey(100);
