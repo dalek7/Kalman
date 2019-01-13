@@ -9,6 +9,10 @@ Release/
 # XCODE
 xcuserdata/
 
+# Codeblocks
+obj/
+bin/
+*.layout
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
