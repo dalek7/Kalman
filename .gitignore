@@ -6,6 +6,8 @@ ipch/
 Debug/
 Release/
 *.VC
+*.db
+.vs/
 
 # XCODE
 xcuserdata/
