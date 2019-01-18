@@ -11,4 +11,22 @@ static float data_px[] = { 0.52801,0.55901,0.59869,0.6268,0.65788,0.69128,0.7123
 static float data_py[] = { -0.10764,-0.11525,-0.12134,-0.12416,-0.13478,-0.13629,-0.13921,-0.14293,-0.15084,-0.15287,-0.15805,-0.15892,-0.1614,-0.1676,-0.16888,-0.17015,-0.17548,-0.17647,-0.18173,-0.1757,-0.17761,-0.18182,-0.18522
 };
 
+typedef struct __status
+{
+	float v[4];
+
+} status;
+
+status KalmanFilter(float t, float x, float y)
+{
+	// TODO : implement this function.. 
+	status vout;
+	vout.v[0] = x + 1; //for testing
+	vout.v[1] = x + 2;
+	vout.v[2] = 0;
+	vout.v[3] = 0;
+
+
+	return vout;
+}
 

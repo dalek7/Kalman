@@ -15,7 +15,8 @@ int main()
 		float px = data_px[i];
 		float py = data_py[i];
 
-		printf("%d\t%f\t%f\t%f\n", i, t0, px, py);
+		status vout = KalmanFilter(t0, px, py);
+		printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, vout.v[0], vout.v[1]);
 
 	}
 	return 0;
