@@ -8,6 +8,7 @@ Release/
 *.VC
 *.db
 .vs/
+*.VC.db
 
 # XCODE
 xcuserdata/
