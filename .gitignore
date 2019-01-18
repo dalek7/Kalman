@@ -9,6 +9,7 @@ Release/
 *.db
 .vs/
 *.VC.db
+*.opendb
 
 # XCODE
 xcuserdata/
