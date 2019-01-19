@@ -40,10 +40,11 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 		SetEye(&_param1.P, 100.0f);
 
 		printf("Initialized..\n");
+		
 		return state1;
 	}
 	float dt = t - previous_t;
-
+	state1 = _state1;
 	Mat A;
 	SetMat(&A, 1, 0, dt, 0,
 				0, 1, 0, dt,
@@ -58,7 +59,7 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 	//Desc(A);
 	//Desc(C);
 
-	state1 = _state1;
+	//state1 = _state1;
 	// TODO : implement this function.. 
 	
 	Mat Q;
@@ -66,10 +67,35 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 	
 	// measurement noise cov.
 	Mat2x2 R;
+	SetEye(&R, 0.01);
 
 	//R = 0.01* eye(2); % 100    fail 6 / 15
 	//% 0.01 pass  15 / 15
 
+
+	// project the state ahead
+	//X = A * state';
+	Vec4 X = MultVec(A, state1.v);
+
+	// Uncertainty matrix, P
+	// project the error covariance ahead
+	// P = A*param.P*A' + Q;
+
+	//A: 4x4
+	//param.P : 4x4
+	//Q: 4x4
+
+	Mat4x4 AP = MultMat(A, _param1.P);
+	Mat4x4 At = TransposeOf(A);
+	Mat4x4 APAt = MultMat(AP, At);
+	Mat4x4 P = AddMat(APAt, Q);
+
+
+	state1.v[0] = X.x;
+	state1.v[1] = X.y;
+	state1.v[2] = X.z;
+	state1.v[3] = X.w;
+	
 
 	return state1;
 }

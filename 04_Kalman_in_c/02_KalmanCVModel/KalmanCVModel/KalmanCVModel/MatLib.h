@@ -162,7 +162,10 @@ void SetEye(Mat4x4* mat, float v)
 
 void SetEye(Mat2x2* mat, float v)
 {
-	;;
+	mat->v[0][0] = v;
+	mat->v[0][1] = 0;
+	mat->v[1][0] = 0;
+	mat->v[1][1] = v;
 }
 
 Mat4x4 Zeros()
@@ -203,6 +206,26 @@ Mat4x4 TransposeOf(Mat4x4 _mat)
 	return dst;
 }
 
+
+Mat4x4 AddMat(Mat4x4 lhs, Mat4x4 rhs)
+{
+	Mat4x4 _mat;
+
+	for (int ii = 0; ii<4; ii++)
+	{
+		for (int jj = 0; jj<4; jj++)
+		{
+			_mat.v[ii][jj] = lhs.v[ii][jj] + rhs.v[ii][jj];
+			
+		}
+		printf("\r\n");
+	}
+
+
+	
+
+	return;
+}
 Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 {
 	Mat4x4 _mat;
@@ -241,6 +264,20 @@ Vec4 MultVec(Mat4x4 _mat, Vec4 v)
 
 	return _vec;
 }
+
+
+Vec4 MultVec(Mat4x4 _mat, float *v)
+{
+	Vec4 _vec;
+
+	_vec.x = (_mat.v[0][0] * v[0] + _mat.v[1][0] * v[1] + _mat.v[2][0] * v[2] + _mat.v[3][0] * v[3]);
+	_vec.y = (_mat.v[0][1] * v[0] + _mat.v[1][1] * v[1] + _mat.v[2][1] * v[2] + _mat.v[3][1] * v[3]);
+	_vec.z = (_mat.v[0][2] * v[0] + _mat.v[1][2] * v[1] + _mat.v[2][2] * v[2] + _mat.v[3][2] * v[3]);
+	_vec.w = (_mat.v[0][3] * v[0] + _mat.v[1][3] * v[1] + _mat.v[2][3] * v[2] + _mat.v[3][3] * v[3]);
+
+	return _vec;
+}
+
 
 void Desc(Vec4 v1)
 {
