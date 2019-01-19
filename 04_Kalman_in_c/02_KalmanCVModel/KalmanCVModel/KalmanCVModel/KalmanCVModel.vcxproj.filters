@@ -41,8 +41,5 @@
     <ClCompile Include="KalmanCVModel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MatLib.c">
-      <Filter>lib</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>

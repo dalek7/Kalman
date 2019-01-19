@@ -12,23 +12,42 @@ static float data_px[] = { 0.52801,0.55901,0.59869,0.6268,0.65788,0.69128,0.7123
 static float data_py[] = { -0.10764,-0.11525,-0.12134,-0.12416,-0.13478,-0.13629,-0.13921,-0.14293,-0.15084,-0.15287,-0.15805,-0.15892,-0.1614,-0.1676,-0.16888,-0.17015,-0.17548,-0.17647,-0.18173,-0.1757,-0.17761,-0.18182,-0.18522
 };
 
-typedef struct __status
+typedef struct __state
 {
 	float v[4];
 
-} status;
+} state;
 
-status KalmanFilter(float t, float x, float y)
+
+typedef struct __kalmanparam
 {
+	Mat4x4 P;
+	
+
+} param;
+
+state KalmanFilter(float t, float x, float y, state _state1, param _param1, float previous_t)
+{
+	state state1;
+
+	if (previous_t < 0)
+	{
+		state1.v[0] = x;
+		state1.v[1] = y;
+		state1.v[2] = 0;
+		state1.v[3] = 0;
+
+		SetEye(&_param1.P, 100.0f);
+
+		printf("Initialized..\n");
+		return state1;
+	}
+
+	state1 = _state1;
 	// TODO : implement this function.. 
-	status vout;
-	vout.v[0] = x + 1; //for testing
-	vout.v[1] = x + 2;
-	vout.v[2] = 0;
-	vout.v[3] = 0;
+	
 
-
-	return vout;
+	return state1;
 }
 
 #endif
