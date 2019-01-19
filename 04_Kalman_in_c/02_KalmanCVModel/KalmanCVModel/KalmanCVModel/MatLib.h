@@ -218,14 +218,12 @@ Mat4x4 AddMat(Mat4x4 lhs, Mat4x4 rhs)
 			_mat.v[ii][jj] = lhs.v[ii][jj] + rhs.v[ii][jj];
 			
 		}
-		printf("\r\n");
 	}
 
-
-	
-
-	return;
+	return _mat;
 }
+
+
 Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 {
 	Mat4x4 _mat;

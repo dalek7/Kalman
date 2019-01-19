@@ -86,6 +86,8 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 	//Q: 4x4
 	Mat4x4 P = AddMat(MultMat(MultMat(A, _param1.P), TransposeOf(A)), Q);
 
+
+
 	state1.v[0] = X.x;
 	state1.v[1] = X.y;
 	state1.v[2] = X.z;
