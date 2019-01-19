@@ -216,10 +216,8 @@ Mat4x4 AddMat(Mat4x4 lhs, Mat4x4 rhs)
 		for (int jj = 0; jj<4; jj++)
 		{
 			_mat.v[ii][jj] = lhs.v[ii][jj] + rhs.v[ii][jj];
-			
 		}
 	}
-
 	return _mat;
 }
 
@@ -251,6 +249,30 @@ Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 	return _mat;
 }
 
+/*
+#define INNER_PRODUCT(a,b,r,c) \
+((a).v[r][0] * (b).v[0][c]) \
++((a).v[r][1] * (b).v[1][c]) \
++((a).v[r][2] * (b).v[2][c]) \
++((a).v[r][3] * (b).v[3][c])
+*/
+
+Mat2x4 MultMat(Mat2x4 lhs, Mat4x4 rhs)
+{
+	Mat2x4 _mat;
+
+	_mat.v[0][0] = INNER_PRODUCT(lhs, rhs, 0, 0);
+	_mat.v[0][1] = INNER_PRODUCT(lhs, rhs, 0, 1);
+	_mat.v[0][2] = INNER_PRODUCT(lhs, rhs, 0, 2);
+	_mat.v[0][3] = INNER_PRODUCT(lhs, rhs, 0, 3);
+
+	_mat.v[1][0] = INNER_PRODUCT(lhs, rhs, 1, 0);
+	_mat.v[1][1] = INNER_PRODUCT(lhs, rhs, 1, 1);
+	_mat.v[1][2] = INNER_PRODUCT(lhs, rhs, 1, 2);
+	_mat.v[1][3] = INNER_PRODUCT(lhs, rhs, 1, 3);
+
+	return _mat;
+}
 Vec4 MultVec(Mat4x4 _mat, Vec4 v)
 {
 	Vec4 _vec;

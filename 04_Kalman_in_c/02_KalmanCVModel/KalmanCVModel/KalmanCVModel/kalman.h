@@ -86,6 +86,19 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 	//Q: 4x4
 	Mat4x4 P = AddMat(MultMat(MultMat(A, _param1.P), TransposeOf(A)), Q);
 
+	// Measurement update(correction)
+	// Kalman gain
+	// S = C * P * C' + R;
+	// K = P * C' * inv( S);
+
+	// S : 2x2
+	// C : 2x4
+	// P : 4x4
+	// C': 4x2
+
+	Mat2x4 CP = MultMat(C, P);
+
+	
 
 
 	state1.v[0] = X.x;
