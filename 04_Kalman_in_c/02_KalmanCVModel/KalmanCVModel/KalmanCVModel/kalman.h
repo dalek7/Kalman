@@ -42,10 +42,34 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 		printf("Initialized..\n");
 		return state1;
 	}
+	float dt = t - previous_t;
+
+	Mat A;
+	SetMat(&A, 1, 0, dt, 0,
+				0, 1, 0, dt,
+				0, 0, 1, 0,
+				0, 0, 0, 1);
+	
+	// observation model (measurement model)
+	Mat2x4 C;
+	SetMat(&C,	1, 0, 0, 0,
+				0, 1, 0, 0);
+
+	//Desc(A);
+	//Desc(C);
 
 	state1 = _state1;
 	// TODO : implement this function.. 
 	
+	Mat Q;
+	SetEye(&Q, 10.0f);
+	
+	// measurement noise cov.
+	Mat2x2 R;
+
+	//R = 0.01* eye(2); % 100    fail 6 / 15
+	//% 0.01 pass  15 / 15
+
 
 	return state1;
 }

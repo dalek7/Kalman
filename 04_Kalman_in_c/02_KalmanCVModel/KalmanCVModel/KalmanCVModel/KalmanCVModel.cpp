@@ -8,8 +8,6 @@ int main()
 {
 	//testmat();
 	
-	
-	
 	int sz = 10;
 	float last_t = -1;
 	state state1;

@@ -21,6 +21,16 @@ typedef struct _mat4x4
 	float v[4][4];
 } Mat4x4;
 
+typedef struct _mat2x4
+{
+	float v[2][4];
+} Mat2x4;
+
+typedef struct _mat2x2
+{
+	float v[2][2];
+} Mat2x2;
+
 typedef Mat4x4 Mat;
 
 void SetMat(Mat4x4* mat,
@@ -28,7 +38,11 @@ void SetMat(Mat4x4* mat,
 		  float a10, float a11, float a12, float a13,
 		  float a20, float a21, float a22, float a23,
 		  float a30, float a31, float a32, float a33);
-			  
+
+void SetMat(Mat2x4* mat,
+	float a00, float a01, float a02, float a03,
+	float a10, float a11, float a12, float a13);
+
 void SetVec(Vec4* vec, float *v);
 void SetMatRow(Mat4x4* mat, int _nRow, Vec4 _vec);
 void SetMatCol(Mat4x4* mat, int _nCol, Vec4 _vec);
@@ -120,13 +134,35 @@ void SetMat(Mat4x4* mat,
 
 }
 
+void SetMat(Mat2x4* mat,
+	float a00, float a01, float a02, float a03,
+	float a10, float a11, float a12, float a13)
+{
+	Vec4 row0 = { a00, a01, a02, a03 };
+	Vec4 row1 = { a10, a11, a12, a13 };
+
+	mat->v[0][0] = a00;
+	mat->v[0][1] = a01;
+	mat->v[0][2] = a02;
+	mat->v[0][3] = a03;
+
+	mat->v[1][0] = a10;
+	mat->v[1][1] = a11;
+	mat->v[1][2] = a12;
+	mat->v[1][3] = a13;
+}
+
 void SetEye(Mat4x4* mat, float v)
 {
 	SetMatRow(mat, 0, { v, 0, 0, 0 });
 	SetMatRow(mat, 1, { 0, v, 0, 0 });
 	SetMatRow(mat, 2, { 0, 0, v, 0 });
 	SetMatRow(mat, 3, { 0, 0, 0, v });
+}
 
+void SetEye(Mat2x2* mat, float v)
+{
+	;;
 }
 
 Mat4x4 Zeros()
@@ -136,7 +172,6 @@ Mat4x4 Zeros()
 		for (int j = 0; j < 4; j++)
 		{
 			m1.v[i][j] = 0.0f;
-
 		}
 	
 	return m1;
@@ -224,9 +259,20 @@ void Desc(Mat4x4 _mat)
 		}
 		printf("\r\n");
 	}
-
-	
 }
+
+void Desc(Mat2x4 _mat)
+{
+	for (int ii = 0; ii<2; ii++)
+	{
+		for (int jj = 0; jj<4; jj++)
+		{
+			printf("%f\t", _mat.v[ii][jj]);
+		}
+		printf("\r\n");
+	}
+}
+
 
 void testmat()
 {
