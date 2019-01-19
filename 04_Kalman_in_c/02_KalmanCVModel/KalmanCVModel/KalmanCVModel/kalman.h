@@ -1,6 +1,7 @@
-#pragma once
+#ifndef __SNOW_KALMAN__
+#define __SNOW_KALMAN__
 
-
+#include "MatLib.h"
 
 static float data_t[] = { 0,0.033426,0.066893,0.10036,0.13387,0.16729,0.20072,0.23414,0.26757,0.30113,0.33455,0.36799,0.40142,0.43484,0.46825,0.50168,0.5351,0.56853,0.602,0.63545,0.66887,0.70233,0.73575
 };
@@ -30,3 +31,4 @@ status KalmanFilter(float t, float x, float y)
 	return vout;
 }
 
+#endif
