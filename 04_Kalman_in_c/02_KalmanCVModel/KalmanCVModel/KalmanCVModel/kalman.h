@@ -95,10 +95,13 @@ state KalmanFilter(float t, float x, float y, state _state1, param _param1, floa
 	// C : 2x4
 	// P : 4x4
 	// C': 4x2
-
+	// CP : 2x4
 	Mat2x4 CP = MultMat(C, P);
-
+	Mat4x2 Ct = TransposeOf(C);
+	Mat2x2 CPCt = MultMat(CP, Ct);
+	Mat2x2 S = AddMat(CPCt, R);
 	
+	// TODO : inv Mat2x2
 
 
 	state1.v[0] = X.x;

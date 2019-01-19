@@ -26,6 +26,13 @@ typedef struct _mat2x4
 	float v[2][4];
 } Mat2x4;
 
+
+typedef struct _mat4x2
+{
+	float v[4][2];
+} Mat4x2;
+
+
 typedef struct _mat2x2
 {
 	float v[2][2];
@@ -48,10 +55,11 @@ void SetMatRow(Mat4x4* mat, int _nRow, Vec4 _vec);
 void SetMatCol(Mat4x4* mat, int _nCol, Vec4 _vec);
 
 
-
-
 void Transpose(Mat4x4* mat);
 Mat4x4 TransposeOf(Mat4x4 _mat);
+
+Mat4x2 TransposeOf(Mat2x4 _mat);
+
 
 Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs);
 Vec4 MultVec(Mat4x4 _mat1, Vec4 _vec1);
@@ -193,6 +201,21 @@ void Transpose(Mat4x4* _mat)
 	_mat = &dst;
 }
 
+Mat4x2 TransposeOf(Mat2x4 _mat)
+{
+	Mat4x2 dst;
+
+	for (int ii = 0; ii<4; ii++)
+	{
+		for (int jj = 0; jj<2; jj++)
+		{
+			dst.v[ii][jj] = _mat.v[jj][ii];
+		}
+	}
+	return dst;
+}
+
+
 Mat4x4 TransposeOf(Mat4x4 _mat)
 {
 	Mat4x4 dst;
@@ -220,6 +243,22 @@ Mat4x4 AddMat(Mat4x4 lhs, Mat4x4 rhs)
 	}
 	return _mat;
 }
+
+
+Mat2x2 AddMat(Mat2x2 lhs, Mat2x2 rhs)
+{
+	Mat2x2 _mat;
+
+	for (int ii = 0; ii<2; ii++)
+	{
+		for (int jj = 0; jj<2; jj++)
+		{
+			_mat.v[ii][jj] = lhs.v[ii][jj] + rhs.v[ii][jj];
+		}
+	}
+	return _mat;
+}
+
 
 
 Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
@@ -257,6 +296,19 @@ Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 +((a).v[r][3] * (b).v[3][c])
 */
 
+Mat2x2 MultMat(Mat2x4 lhs, Mat4x2 rhs)
+{
+	Mat2x2 _mat;
+
+	_mat.v[0][0] = INNER_PRODUCT(lhs, rhs, 0, 0);
+	_mat.v[0][1] = INNER_PRODUCT(lhs, rhs, 0, 1);
+
+	_mat.v[1][0] = INNER_PRODUCT(lhs, rhs, 1, 0);
+	_mat.v[1][1] = INNER_PRODUCT(lhs, rhs, 1, 1);
+
+	return _mat;
+
+}
 Mat2x4 MultMat(Mat2x4 lhs, Mat4x4 rhs)
 {
 	Mat2x4 _mat;
