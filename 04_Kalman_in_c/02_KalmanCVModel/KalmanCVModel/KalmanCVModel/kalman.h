@@ -26,6 +26,15 @@ typedef struct __kalmanparam
 
 } param;
 
+void SetState(state* pstate, float a, float b, float c, float d)
+{
+	pstate->v[0] = a;
+	pstate->v[1] = b; 
+	pstate->v[2] = c; 
+	pstate->v[3] = d; 
+}
+
+
 void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, float previous_t)
 {
 	//state state1;
@@ -39,7 +48,7 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 
 		SetEye(&_param1->P, 100.0f);
 		printf("P=\n\r");
-		Desc(_param1->P);
+		//Desc(_param1->P);
 		printf("Initialized..\n");
 		
 		return;
@@ -89,6 +98,7 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 	//param.P : 4x4
 	//Q: 4x4
 	Mat4x4 AP = MultMat(A, _param1->P);
+	Mat4x4 At = TransposeOf(A);
 	//Desc(AP);
 
 	Mat4x4 P = AddMat(MultMat(MultMat(A, _param1->P), TransposeOf(A)), Q);
@@ -109,7 +119,10 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 	Mat2x2 S = AddMat(CPCt, R);
 	
 	Mat4x2 PCt = MultMat(P, Ct);
+
+	//Mat2x2 Sinv = Inverse(S);//okay
 	Mat4x2 K = MultMat(PCt, Inverse(S)); //PCtSinv = P * C' * inv( S);
+	//Desc(K);
 	//Inverse(S)
 	
 	// update the estimate via z

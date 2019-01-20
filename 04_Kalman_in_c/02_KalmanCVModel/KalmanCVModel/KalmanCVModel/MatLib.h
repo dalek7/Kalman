@@ -361,21 +361,22 @@ Mat4x2 MultMat(Mat4x4 lhs, Mat4x2 rhs)
 
 
 // TODO : validate this func !!
+// P * C' * inv( S);
 Mat4x2 MultMat(Mat4x2 lhs, Mat2x2 rhs)
 {
 	Mat4x2 _mat;
 
-	_mat.v[0][0] = lhs.v[0][0] * rhs.v[0][0] + lhs.v[0][1] * lhs.v[1][0];
-	_mat.v[0][1] = lhs.v[0][0] * rhs.v[0][1] + lhs.v[0][1] * lhs.v[1][1];
+	_mat.v[0][0] = lhs.v[0][0] * rhs.v[0][0] + lhs.v[0][1] * rhs.v[1][0];
+	_mat.v[0][1] = lhs.v[0][0] * rhs.v[0][1] + lhs.v[0][1] * rhs.v[1][1];
 
-	_mat.v[1][0] = lhs.v[1][0] * rhs.v[0][0] + lhs.v[1][1] * lhs.v[1][0];
-	_mat.v[1][1] = lhs.v[1][0] * rhs.v[0][1] + lhs.v[1][1] * lhs.v[1][1];
+	_mat.v[1][0] = lhs.v[1][0] * rhs.v[0][0] + lhs.v[1][1] * rhs.v[1][0];
+	_mat.v[1][1] = lhs.v[1][0] * rhs.v[0][1] + lhs.v[1][1] * rhs.v[1][1];
 
-	_mat.v[2][0] = lhs.v[2][0] * rhs.v[0][0] + lhs.v[2][1] * lhs.v[1][0];
-	_mat.v[2][1] = lhs.v[2][0] * rhs.v[0][1] + lhs.v[2][1] * lhs.v[1][1];
+	_mat.v[2][0] = lhs.v[2][0] * rhs.v[0][0] + lhs.v[2][1] * rhs.v[1][0];
+	_mat.v[2][1] = lhs.v[2][0] * rhs.v[0][1] + lhs.v[2][1] * rhs.v[1][1];
 
-	_mat.v[3][0] = lhs.v[3][0] * rhs.v[0][0] + lhs.v[3][1] * lhs.v[1][0];
-	_mat.v[3][1] = lhs.v[3][0] * rhs.v[0][1] + lhs.v[3][1] * lhs.v[1][1];
+	_mat.v[3][0] = lhs.v[3][0] * rhs.v[0][0] + lhs.v[3][1] * rhs.v[1][0];
+	_mat.v[3][1] = lhs.v[3][0] * rhs.v[0][1] + lhs.v[3][1] * rhs.v[1][1];
 
 	return _mat;
 }
@@ -544,6 +545,19 @@ void Desc(Mat2x4 _mat)
 	for (int ii = 0; ii<2; ii++)
 	{
 		for (int jj = 0; jj<4; jj++)
+		{
+			printf("%f\t", _mat.v[ii][jj]);
+		}
+		printf("\r\n");
+	}
+}
+
+
+void Desc(Mat4x2 _mat)
+{
+	for (int ii = 0; ii<4; ii++)
+	{
+		for (int jj = 0; jj<2; jj++)
 		{
 			printf("%f\t", _mat.v[ii][jj]);
 		}

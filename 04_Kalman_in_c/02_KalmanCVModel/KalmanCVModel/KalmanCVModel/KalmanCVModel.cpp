@@ -4,23 +4,18 @@
 #include "stdafx.h"
 #include "kalman.h"
 #include "MatLib.h"
+
 int main()
 {
-	//testinv();
-	//return 1;
-	int sz = 10;
+	//int sz = 10;
+	int sz = sizeof(data_t) / sizeof(float);
 	float last_t = -1;
 	state state1;
 	param param1;
 	param1.P = Zeros();
 
-	Desc(param1.P);
-
-	state1.v[0] = 0;
-	state1.v[1] = 0;
-	state1.v[2] = 0;
-	state1.v[3] = 0;
-
+	//Desc(param1.P);
+	SetState(&state1, 0, 0, 0, 0);
 	
 	for (int i = 0; i < sz; i++)
 	{
@@ -29,16 +24,25 @@ int main()
 		float py = data_py[i];
 
 		//loat t, float x, float y, state state1, param param1, float previous_t)
-		printf("==%d==\n\r", i);
-		 KalmanFilter(t0, px, py, &state1, &param1, last_t);
-		//printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, vout.v[0], vout.v[1]);
+		KalmanFilter(t0, px, py, &state1, &param1, last_t);
+		//if (i == 0)
+		
+
+		//printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, state1.v[0], state1.v[1]);
+		printf("%d\t%f\t%f\t%f\t%f\n", i, state1.v[0], state1.v[1], state1.v[2], state1.v[3]);
 		//Desc(param1.P);
-		printf("\n\r");
-		//state1 = vout;
+		
+		{
+			//printf("Initial P (uncertainty matrix)=\n");
+			Desc(param1.P);
+		}
+		printf("\n\n");
 
 		last_t = t0;
 	}
 	
+	//printf("Final P =\n");
+	//Desc(param1.P);
+
 	return 0;
 }
-
