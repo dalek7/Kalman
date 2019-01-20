@@ -30,12 +30,8 @@ int main()
 
 		//printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, state1.v[0], state1.v[1]);
 		printf("%d\t%f\t%f\t%f\t%f\n", i, state1.v[0], state1.v[1], state1.v[2], state1.v[3]);
-		//Desc(param1.P);
+		Desc(param1.P);
 		
-		{
-			//printf("Initial P (uncertainty matrix)=\n");
-			Desc(param1.P);
-		}
 		printf("\n\n");
 
 		last_t = t0;

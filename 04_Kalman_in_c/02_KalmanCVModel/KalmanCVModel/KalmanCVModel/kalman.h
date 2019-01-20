@@ -54,6 +54,7 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 		return;
 		//return state1;
 	}
+	Mat4x4 P = _param1->P;
 	float dt = t - previous_t;
 	//state1 = _state1;
 	Mat A;
@@ -97,11 +98,16 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 	//A: 4x4
 	//param.P : 4x4
 	//Q: 4x4
-	Mat4x4 AP = MultMat(A, _param1->P);
+	//Desc(_param1->P);
+	Mat4x4 AP = MultMat(A, P);
 	Mat4x4 At = TransposeOf(A);
 	//Desc(AP);
 
-	Mat4x4 P = AddMat(MultMat(MultMat(A, _param1->P), TransposeOf(A)), Q);
+	//Mat4x4 APAt = MultMat(MultMat(A, _param1->P), TransposeOf(A));
+	//Desc(APAt);
+	
+
+	P = AddMat(MultMat(MultMat(A, P), TransposeOf(A)), Q);
 	
 	// Measurement update(correction)
 	// Kalman gain
@@ -155,10 +161,13 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 	Mat4x4 KC = MultMat(K, C);
 	Mat4x4 KCP = MultMat(KC, P);
 
-	//FIX : KCP has big second row....
-
+	//Desc(KC);
+	//Desc(KCP);//okay
+	
 	//SubtractMat(&_param1->P, P, KCP);
-	_param1->P = SubtractMat(P, KCP);
+
+	P = SubtractMat(P, KCP);
+	_param1->P = P;
 
 	_state1->v[0] = X.x;
 	_state1->v[1] = X.y;

@@ -311,7 +311,6 @@ Mat2x2 AddMat(Mat2x2 lhs, Mat2x2 rhs)
 }
 
 
-
 Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 {
 	Mat4x4 _mat;
@@ -339,6 +338,21 @@ Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 	return _mat;
 }
 
+/*
+Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
+{
+	Mat4x4 _mat;
+
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			_mat.v[i][j] =	lhs.v[i][0] * rhs.v[0][j] +
+							lhs.v[i][1] * rhs.v[1][j] +
+							lhs.v[i][2] * rhs.v[2][j] +
+							lhs.v[i][3] * rhs.v[3][j];
+
+	return _mat;
+}
+*/
 // TODO : validate this func !
 Mat4x2 MultMat(Mat4x4 lhs, Mat4x2 rhs)
 {
@@ -388,7 +402,7 @@ Mat4x4 MultMat(Mat4x2 lhs, Mat2x4 rhs)
 
 	for(int i=0; i<4; i++)
 		for (int j=0; j<4; j++)
-			_mat.v[i][j] = lhs.v[i][0] * rhs.v[0][j] + lhs.v[i][1] * lhs.v[1][j];
+			_mat.v[i][j] = lhs.v[i][0] * rhs.v[0][j] + lhs.v[i][1] * rhs.v[1][j];
 
 	return _mat;
 }
@@ -482,10 +496,10 @@ Vec4 MultVec(Mat4x4 _mat, float *v)
 Vec4 MultVec(Mat4x2 _mat, Vec2 v)
 {
 	Vec4 _vec;
-	_vec.x = (_mat.v[0][0] * v.x + _mat.v[1][0] * v.y);
-	_vec.y = (_mat.v[0][1] * v.x + _mat.v[1][1] * v.y);
-	_vec.z = (_mat.v[0][2] * v.x + _mat.v[1][2] * v.y);
-	_vec.w = (_mat.v[0][3] * v.x + _mat.v[1][3] * v.y);
+	_vec.x = (_mat.v[0][0] * v.x + _mat.v[0][1] * v.y);
+	_vec.y = (_mat.v[1][0] * v.x + _mat.v[1][1] * v.y);
+	_vec.z = (_mat.v[2][0] * v.x + _mat.v[2][1] * v.y);
+	_vec.w = (_mat.v[3][0] * v.x + _mat.v[3][1] * v.y);
 
 	return _vec;
 }
