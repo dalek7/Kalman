@@ -15,6 +15,11 @@ typedef struct _vec4
 	float w;
 } Vec4;
 
+typedef struct _vec2
+{
+	float x;
+	float y;
+} Vec2;
 
 typedef struct _mat4x4
 {
@@ -63,6 +68,7 @@ Mat4x2 TransposeOf(Mat2x4 _mat);
 
 Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs);
 Vec4 MultVec(Mat4x4 _mat1, Vec4 _vec1);
+Vec2 MultVec(Mat2x4 _mat1, Vec2 _vec1);
 
 // to be added
 /*
@@ -254,6 +260,42 @@ Mat4x4 AddMat(Mat4x4 lhs, Mat4x4 rhs)
 }
 
 
+Mat4x4 SubtractMat( Mat4x4 lhs, Mat4x4 rhs)
+{
+	Mat4x4 dst;
+
+	for (int ii = 0; ii<4; ii++)
+	{
+		for (int jj = 0; jj<4; jj++)
+		{
+			float v1 = lhs.v[ii][jj];
+			float v2 = rhs.v[ii][jj];
+			float v = v1 - v2;
+			dst.v[ii][jj] = v;// lhs.v[ii][jj] - rhs.v[ii][jj];
+		}
+	}
+
+	return dst;
+}
+
+
+void SubtractMat(Mat4x4* dst, Mat4x4 lhs, Mat4x4 rhs)
+{
+	//Mat4x4 dst;
+
+	for (int ii = 0; ii<4; ii++)
+	{
+		for (int jj = 0; jj<4; jj++)
+		{
+			dst->v[ii][jj] = lhs.v[ii][jj] - rhs.v[ii][jj];
+		}
+	}
+
+	//return _mat;
+}
+
+
+
 Mat2x2 AddMat(Mat2x2 lhs, Mat2x2 rhs)
 {
 	Mat2x2 _mat;
@@ -297,6 +339,58 @@ Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 	return _mat;
 }
 
+// TODO : validate this func !
+Mat4x2 MultMat(Mat4x4 lhs, Mat4x2 rhs)
+{
+	Mat4x2 _mat;
+
+	_mat.v[0][0] = INNER_PRODUCT(lhs, rhs, 0, 0);
+	_mat.v[0][1] = INNER_PRODUCT(lhs, rhs, 0, 1);
+
+	_mat.v[1][0] = INNER_PRODUCT(lhs, rhs, 1, 0);
+	_mat.v[1][1] = INNER_PRODUCT(lhs, rhs, 1, 1);
+
+	_mat.v[2][0] = INNER_PRODUCT(lhs, rhs, 2, 0);
+	_mat.v[2][1] = INNER_PRODUCT(lhs, rhs, 2, 1);
+
+	_mat.v[3][0] = INNER_PRODUCT(lhs, rhs, 3, 0);
+	_mat.v[3][1] = INNER_PRODUCT(lhs, rhs, 3, 1);
+
+	return _mat;
+}
+
+
+// TODO : validate this func !!
+Mat4x2 MultMat(Mat4x2 lhs, Mat2x2 rhs)
+{
+	Mat4x2 _mat;
+
+	_mat.v[0][0] = lhs.v[0][0] * rhs.v[0][0] + lhs.v[0][1] * lhs.v[1][0];
+	_mat.v[0][1] = lhs.v[0][0] * rhs.v[0][1] + lhs.v[0][1] * lhs.v[1][1];
+
+	_mat.v[1][0] = lhs.v[1][0] * rhs.v[0][0] + lhs.v[1][1] * lhs.v[1][0];
+	_mat.v[1][1] = lhs.v[1][0] * rhs.v[0][1] + lhs.v[1][1] * lhs.v[1][1];
+
+	_mat.v[2][0] = lhs.v[2][0] * rhs.v[0][0] + lhs.v[2][1] * lhs.v[1][0];
+	_mat.v[2][1] = lhs.v[2][0] * rhs.v[0][1] + lhs.v[2][1] * lhs.v[1][1];
+
+	_mat.v[3][0] = lhs.v[3][0] * rhs.v[0][0] + lhs.v[3][1] * lhs.v[1][0];
+	_mat.v[3][1] = lhs.v[3][0] * rhs.v[0][1] + lhs.v[3][1] * lhs.v[1][1];
+
+	return _mat;
+}
+
+// TODO : validate
+Mat4x4 MultMat(Mat4x2 lhs, Mat2x4 rhs)
+{
+	Mat4x4 _mat;
+
+	for(int i=0; i<4; i++)
+		for (int j=0; j<4; j++)
+			_mat.v[i][j] = lhs.v[i][0] * rhs.v[0][j] + lhs.v[i][1] * lhs.v[1][j];
+
+	return _mat;
+}
 /*
 #define INNER_PRODUCT(a,b,r,c) \
 ((a).v[r][0] * (b).v[0][c]) \
@@ -355,17 +449,20 @@ Mat2x4 MultMat(Mat2x4 lhs, Mat4x4 rhs)
 
 	return _mat;
 }
+
+// FIXED.. check needed.
 Vec4 MultVec(Mat4x4 _mat, Vec4 v)
 {
 	Vec4 _vec;
 
-	_vec.x = (_mat.v[0][0] * v.x + _mat.v[1][0] * v.y + _mat.v[2][0] * v.z + _mat.v[3][0] * v.w);
-	_vec.y = (_mat.v[0][1] * v.x + _mat.v[1][1] * v.y + _mat.v[2][1] * v.z + _mat.v[3][1] * v.w);
-	_vec.z = (_mat.v[0][2] * v.x + _mat.v[1][2] * v.y + _mat.v[2][2] * v.z + _mat.v[3][2] * v.w);
-	_vec.w = (_mat.v[0][3] * v.x + _mat.v[1][3] * v.y + _mat.v[2][3] * v.z + _mat.v[3][3] * v.w);
+	_vec.x = (_mat.v[0][0] * v.x + _mat.v[0][1] * v.y + _mat.v[0][2] * v.z + _mat.v[0][3] * v.w);
+	_vec.y = (_mat.v[1][0] * v.x + _mat.v[1][1] * v.y + _mat.v[1][2] * v.z + _mat.v[1][3] * v.w);
+	_vec.z = (_mat.v[2][0] * v.x + _mat.v[2][1] * v.y + _mat.v[2][2] * v.z + _mat.v[2][3] * v.w);
+	_vec.w = (_mat.v[3][0] * v.x + _mat.v[3][1] * v.y + _mat.v[3][2] * v.z + _mat.v[3][3] * v.w);
 
 	return _vec;
 }
+
 
 
 Vec4 MultVec(Mat4x4 _mat, float *v)
@@ -380,6 +477,48 @@ Vec4 MultVec(Mat4x4 _mat, float *v)
 	return _vec;
 }
 
+// (4x2) x (2x1) = (4x1) 
+Vec4 MultVec(Mat4x2 _mat, Vec2 v)
+{
+	Vec4 _vec;
+	_vec.x = (_mat.v[0][0] * v.x + _mat.v[1][0] * v.y);
+	_vec.y = (_mat.v[0][1] * v.x + _mat.v[1][1] * v.y);
+	_vec.z = (_mat.v[0][2] * v.x + _mat.v[1][2] * v.y);
+	_vec.w = (_mat.v[0][3] * v.x + _mat.v[1][3] * v.y);
+
+	return _vec;
+}
+
+Vec2 MultVec(Mat2x4 _mat, Vec4 v)
+{
+	Vec2 _vec;
+	// FIXED
+	_vec.x = (_mat.v[0][0] * v.x + _mat.v[0][1] * v.y + _mat.v[0][2] * v.z + _mat.v[0][3] * v.w);
+	_vec.y = (_mat.v[1][0] * v.x + _mat.v[1][1] * v.y + _mat.v[1][2] * v.z + _mat.v[1][3] * v.w);
+
+	return _vec;
+}
+
+
+
+Vec2 AddVec(Vec2 v1, Vec2 v2)
+{
+	Vec2 dst;
+	dst.x = v1.x + v2.x;
+	dst.y = v1.y + v2.y;
+	return dst;
+}
+
+
+Vec4 AddVec(Vec4 v1, Vec4 v2)
+{
+	Vec4 dst;
+	dst.x = v1.x + v2.x;
+	dst.y = v1.y + v2.y;
+	dst.z = v1.z + v2.z;
+	dst.w = v1.w + v2.w;
+	return dst;
+}
 
 void Desc(Vec4 v1)
 {
@@ -437,7 +576,6 @@ void testinv()
 	Desc(m22i);
 	printf("\r\n------\r\n");
 
-	
 	SetMat(&m22, 3, 3, 5, 4);
 	Desc(m22);
 	printf("\r\n");

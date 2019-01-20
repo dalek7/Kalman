@@ -134,9 +134,6 @@ state KalmanFilter(float t, float x, float y, state _state1, param* _param1, flo
 
 	//Mat4x4 KC = MultMat(K, C);
 	Mat4x4 KCP = MultMat(MultMat(K, C), P);
-
-	//FIX : KCP has big second row....
-
 	//SubtractMat(&_param1->P, P, KCP);
 	_param1->P = SubtractMat(P, KCP);
 
