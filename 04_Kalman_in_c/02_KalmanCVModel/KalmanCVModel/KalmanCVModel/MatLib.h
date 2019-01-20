@@ -146,9 +146,6 @@ void SetMat(Mat2x4* mat,
 	float a00, float a01, float a02, float a03,
 	float a10, float a11, float a12, float a13)
 {
-	Vec4 row0 = { a00, a01, a02, a03 };
-	Vec4 row1 = { a10, a11, a12, a13 };
-
 	mat->v[0][0] = a00;
 	mat->v[0][1] = a01;
 	mat->v[0][2] = a02;
@@ -158,6 +155,18 @@ void SetMat(Mat2x4* mat,
 	mat->v[1][1] = a11;
 	mat->v[1][2] = a12;
 	mat->v[1][3] = a13;
+}
+
+
+void SetMat(Mat2x2* mat,
+	float a00, float a01,
+	float a10, float a11)
+{
+	mat->v[0][0] = a00;
+	mat->v[0][1] = a01;
+	
+	mat->v[1][0] = a10;
+	mat->v[1][1] = a11;
 }
 
 void SetEye(Mat4x4* mat, float v)
@@ -296,6 +305,27 @@ Mat4x4 MultMat(Mat4x4 lhs, Mat4x4 rhs)
 +((a).v[r][3] * (b).v[3][c])
 */
 
+float determinant(Mat2x2 _mat)
+{
+	float det = _mat.v[0][0] * _mat.v[1][1] - _mat.v[0][1] * _mat.v[1][0];
+	return det;
+}
+
+// Inverse of a 2x2 matrix
+Mat2x2 Inverse(Mat2x2 _mat)
+{
+	float det = determinant(_mat);
+	Mat2x2 dst;
+	
+	dst.v[0][0] = _mat.v[1][1] / det;
+	dst.v[1][1] = _mat.v[0][0] / det;
+
+	dst.v[0][1] = -1.0 * _mat.v[0][1] / det;
+	dst.v[1][0] = -1.0 * _mat.v[1][0] / det;
+
+	return dst;
+}
+
 Mat2x2 MultMat(Mat2x4 lhs, Mat4x2 rhs)
 {
 	Mat2x2 _mat;
@@ -383,6 +413,89 @@ void Desc(Mat2x4 _mat)
 }
 
 
+void Desc(Mat2x2 _mat)
+{
+	for (int ii = 0; ii<2; ii++)
+	{
+		for (int jj = 0; jj<2; jj++)
+		{
+			printf("%f\t", _mat.v[ii][jj]);
+		}
+		printf("\r\n");
+	}
+	printf("det = %f", determinant(_mat));
+}
+
+
+void testinv()
+{
+	Mat2x2 m22, m22i;
+	SetMat(&m22, 2, 3, 1, 4);
+	Desc(m22);
+	printf("\r\n");
+	m22i = Inverse(m22);
+	Desc(m22i);
+	printf("\r\n------\r\n");
+
+	
+	SetMat(&m22, 3, 3, 5, 4);
+	Desc(m22);
+	printf("\r\n");
+	m22i = Inverse(m22);
+	Desc(m22i);
+	printf("\r\n------\r\n");
+
+
+	SetMat(&m22, 7, -1.5, 5, 2);
+	Desc(m22);
+	printf("\r\n");
+	m22i = Inverse(m22);
+	Desc(m22i);
+	printf("\r\n------\r\n");
+
+	/*
+	2.000000        3.000000
+	1.000000        4.000000
+	det = 5.000000
+	0.800000        -0.600000
+	-0.200000       0.400000
+	det = 0.200000
+	------
+	3.000000        3.000000
+	5.000000        4.000000
+	det = -3.000000
+	-1.333333       1.000000
+	1.666667        -1.000000
+	det = -0.333333
+	------
+	7.000000        -1.500000
+	5.000000        2.000000
+	det = 21.500000
+	0.093023        0.069767
+	-0.232558       0.325581
+	det = 0.046512
+	------
+	*/
+
+
+}
+void testdet()
+{
+	Mat2x2 m22;
+	SetMat(&m22, 1, 0, 0, 1);
+	Desc(m22);
+	printf("\r\n");
+	
+	SetMat(&m22, 5, 7, 2, 3);
+	Desc(m22); // 1
+	printf("\r\n");
+
+	SetMat(&m22, 5, 7, 3, 3);
+	Desc(m22); // -6
+	printf("\r\n");
+}
+
+
 void testmat()
 {
 	Vec4 v1;
@@ -405,5 +518,7 @@ void testmat()
 
 	SetEye(&m2, 100);
 	Desc(m2);
+
+	
 }
 #endif

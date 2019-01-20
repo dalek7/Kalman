@@ -6,8 +6,8 @@
 #include "MatLib.h"
 int main()
 {
-	//testmat();
-	
+	testinv();
+	return 1;
 	int sz = 10;
 	float last_t = -1;
 	state state1;
