@@ -10,6 +10,8 @@ Release/
 .vs/
 *.VC.db
 *.opendb
+enc_temp_folder/
+
 
 # XCODE
 xcuserdata/
