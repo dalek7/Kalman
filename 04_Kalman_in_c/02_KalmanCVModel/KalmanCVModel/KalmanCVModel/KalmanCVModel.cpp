@@ -29,11 +29,12 @@ int main()
 		float py = data_py[i];
 
 		//loat t, float x, float y, state state1, param param1, float previous_t)
-		state vout = KalmanFilter(t0, px, py, state1, &param1, last_t);
-		printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, vout.v[0], vout.v[1]);
-		Desc(param1.P);
+		printf("==%d==\n\r", i);
+		 KalmanFilter(t0, px, py, &state1, &param1, last_t);
+		//printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, vout.v[0], vout.v[1]);
+		//Desc(param1.P);
 		printf("\n\r");
-		state1 = vout;
+		//state1 = vout;
 
 		last_t = t0;
 	}

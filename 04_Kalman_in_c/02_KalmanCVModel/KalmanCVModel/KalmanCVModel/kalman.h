@@ -26,26 +26,27 @@ typedef struct __kalmanparam
 
 } param;
 
-state KalmanFilter(float t, float x, float y, state _state1, param* _param1, float previous_t)
+void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, float previous_t)
 {
-	state state1;
+	//state state1;
 
 	if (previous_t < 0)
 	{
-		state1.v[0] = x;
-		state1.v[1] = y;
-		state1.v[2] = 0;
-		state1.v[3] = 0;
+		_state1->v[0] = x;
+		_state1->v[1] = y;
+		_state1->v[2] = 0;
+		_state1->v[3] = 0;
 
 		SetEye(&_param1->P, 100.0f);
 		printf("P=\n\r");
 		Desc(_param1->P);
 		printf("Initialized..\n");
 		
-		return state1;
+		return;
+		//return state1;
 	}
 	float dt = t - previous_t;
-	state1 = _state1;
+	//state1 = _state1;
 	Mat A;
 	SetMat(&A,	1, 0, dt, 0,
 				0, 1, 0, dt,
@@ -76,8 +77,10 @@ state KalmanFilter(float t, float x, float y, state _state1, param* _param1, flo
 
 	// project the state ahead
 	//X = A * state';
-	Vec4 X = MultVec(A, state1.v);
+	Vec4 X = MultVec(A, _state1->v);
 
+	//printf("X : \t%f,%f,%f,%f\n", X.x, X.y, X.z, X.w);
+	//
 	// Uncertainty matrix, P
 	// project the error covariance ahead
 	// P = A*param.P*A' + Q;
@@ -85,6 +88,9 @@ state KalmanFilter(float t, float x, float y, state _state1, param* _param1, flo
 	//A: 4x4
 	//param.P : 4x4
 	//Q: 4x4
+	Mat4x4 AP = MultMat(A, _param1->P);
+	//Desc(AP);
+
 	Mat4x4 P = AddMat(MultMat(MultMat(A, _param1->P), TransposeOf(A)), Q);
 	
 	// Measurement update(correction)
@@ -118,6 +124,7 @@ state KalmanFilter(float t, float x, float y, state _state1, param* _param1, flo
 	Vec2 residual;
 	residual.x = Z.x - CX.x;
 	residual.y = Z.y - CX.y;
+	//printf("residual : \t%f,%f\n", residual.x, residual.y);
 
 	// state = X + K * residual;
 	// K : 4x2
@@ -132,20 +139,20 @@ state KalmanFilter(float t, float x, float y, state _state1, param* _param1, flo
 	// C : 2x4
 	// P : 4x4
 
-	//Mat4x4 KC = MultMat(K, C);
-	Mat4x4 KCP = MultMat(MultMat(K, C), P);
+	Mat4x4 KC = MultMat(K, C);
+	Mat4x4 KCP = MultMat(KC, P);
 
 	//FIX : KCP has big second row....
 
 	//SubtractMat(&_param1->P, P, KCP);
 	_param1->P = SubtractMat(P, KCP);
 
-	state1.v[0] = X.x;
-	state1.v[1] = X.y;
-	state1.v[2] = X.z;
-	state1.v[3] = X.w;
+	_state1->v[0] = X.x;
+	_state1->v[1] = X.y;
+	_state1->v[2] = X.z;
+	_state1->v[3] = X.w;
 	
-	return state1;
+	//return state1;
 }
 
 #endif

@@ -464,15 +464,15 @@ Vec4 MultVec(Mat4x4 _mat, Vec4 v)
 }
 
 
-
+//fixed....validate this.
 Vec4 MultVec(Mat4x4 _mat, float *v)
 {
 	Vec4 _vec;
 
-	_vec.x = (_mat.v[0][0] * v[0] + _mat.v[1][0] * v[1] + _mat.v[2][0] * v[2] + _mat.v[3][0] * v[3]);
-	_vec.y = (_mat.v[0][1] * v[0] + _mat.v[1][1] * v[1] + _mat.v[2][1] * v[2] + _mat.v[3][1] * v[3]);
-	_vec.z = (_mat.v[0][2] * v[0] + _mat.v[1][2] * v[1] + _mat.v[2][2] * v[2] + _mat.v[3][2] * v[3]);
-	_vec.w = (_mat.v[0][3] * v[0] + _mat.v[1][3] * v[1] + _mat.v[2][3] * v[2] + _mat.v[3][3] * v[3]);
+	_vec.x = (_mat.v[0][0] * v[0] + _mat.v[0][1] * v[1] + _mat.v[0][2] * v[2] + _mat.v[0][3] * v[3]);
+	_vec.y = (_mat.v[1][0] * v[0] + _mat.v[1][1] * v[1] + _mat.v[1][2] * v[2] + _mat.v[1][3] * v[3]);
+	_vec.z = (_mat.v[2][0] * v[0] + _mat.v[2][1] * v[1] + _mat.v[2][2] * v[2] + _mat.v[2][3] * v[3]);
+	_vec.w = (_mat.v[3][0] * v[0] + _mat.v[3][1] * v[1] + _mat.v[3][2] * v[2] + _mat.v[3][3] * v[3]);
 
 	return _vec;
 }
