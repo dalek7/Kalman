@@ -18,6 +18,7 @@ int main()
 	param1.P = Zeros();
 
 	int bdispP = 0;
+
 	//Desc(param1.P);
 	SetState(&state1, 0, 0, 0, 0);
 	
@@ -33,7 +34,12 @@ int main()
 		//printf("%d\t%f\t%f\t%f\t-->\t%f\t%f\n", i, t0, px, py, state1.v[0], state1.v[1]);
 		printf("%d\t%f\t%f\t%f\t%f\t%f\t%f\t%f\n", i, t0, state1.v[0], state1.v[1], state1.v[2], state1.v[3], px, py);
 		
-		if (bdispP)
+		if (i == 0)
+		{
+			printf("Initial Uncertainty, P_0\n\r");
+			Desc(param1.P);
+		}
+		else if (bdispP)
 		{
 			Desc(param1.P);
 			printf("\n\n");
@@ -41,8 +47,8 @@ int main()
 		last_t = t0;
 	}
 	
-	//printf("Final P =\n");
-	//Desc(param1.P);
+	printf("Final P =\n");
+	Desc(param1.P);
 
 	return 0;
 }

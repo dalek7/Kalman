@@ -14,7 +14,6 @@ typedef struct __kalmanparam
 {
 	Mat4x4 P;
 	
-
 } param;
 
 void SetState(state* pstate, float a, float b, float c, float d)
@@ -109,7 +108,6 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 	//Mat4x4 APAt = MultMat(MultMat(A, _param1->P), TransposeOf(A));
 	//Desc(APAt);
 	
-
 	P = AddMat(MultMat(MultMat(A, P), TransposeOf(A)), Q);
 	
 	// Measurement update(correction)
