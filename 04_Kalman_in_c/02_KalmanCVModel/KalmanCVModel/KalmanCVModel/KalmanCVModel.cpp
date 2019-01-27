@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "kalman.h"
 #include "MatLib.h"
+#include "data2load.h"
 
 int main()
 {
