@@ -3,8 +3,6 @@
 
 #include "MatLib.h"
 
-
-
 typedef struct __state
 {
 	float v[4];
@@ -34,10 +32,18 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 
 	if (previous_t < 0)
 	{
+		/*
+		// position measurement
 		_state1->v[0] = x;
 		_state1->v[1] = y;
 		_state1->v[2] = 0;
 		_state1->v[3] = 0;
+		*/
+		// vel measurement
+		_state1->v[0] = 0;
+		_state1->v[1] = 0;
+		_state1->v[2] = x;
+		_state1->v[3] = y;
 
 		SetEye(&_param1->P, 100.0f);
 		printf("P=\n\r");
@@ -58,8 +64,12 @@ void KalmanFilter(float t, float x, float y, state* _state1, param* _param1, flo
 	
 	// observation model (measurement model)
 	Mat2x4 C;
+	/*
 	SetMat(&C,	1, 0, 0, 0,
 				0, 1, 0, 0);
+	*/
+	SetMat(&C,	0, 0, 1, 0,
+				0, 0, 0, 1);
 
 	//Desc(A);
 	//Desc(C);

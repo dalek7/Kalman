@@ -33,6 +33,9 @@
     <ClInclude Include="MatLib.h">
       <Filter>lib</Filter>
     </ClInclude>
+    <ClInclude Include="data2load.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

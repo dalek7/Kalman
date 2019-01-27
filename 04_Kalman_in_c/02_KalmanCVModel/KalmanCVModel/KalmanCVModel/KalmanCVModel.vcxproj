@@ -145,6 +145,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="data2load.h" />
     <ClInclude Include="kalman.h" />
     <ClInclude Include="MatLib.h" />
     <ClInclude Include="stdafx.h" />
