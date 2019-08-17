@@ -12,6 +12,9 @@ Release/
 *.opendb
 enc_temp_folder/
 
+# pycharm
+.idea/
+.ipynb_checkpoints
 
 # XCODE
 xcuserdata/
